@@ -68,10 +68,11 @@ export function CalendarMorningDew({ occasions }: CalendarMorningDewProps) {
 
   const getOccasionsForDay = (day: Date) => {
     return occasions.filter((occasion) => {
-      const occasionDate = new Date(occasion.date);
+      // Parse date string directly to avoid timezone issues
+      const [, month, dayOfMonth] = occasion.date.split("-").map(Number);
       return (
-        occasionDate.getMonth() === day.getMonth() &&
-        occasionDate.getDate() === day.getDate()
+        month - 1 === day.getMonth() &&
+        dayOfMonth === day.getDate()
       );
     });
   };

@@ -39,6 +39,12 @@ import {
 } from "@/lib/validations/occasion";
 import { cn } from "@/lib/utils";
 
+// Parse YYYY-MM-DD string to local Date to avoid timezone issues
+function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 type Recipient = {
   id: string;
   name: string;
@@ -209,7 +215,7 @@ export function OccasionForm({
                       )}
                     >
                       {field.value ? (
-                        format(new Date(field.value), "PPP")
+                        format(parseLocalDate(field.value), "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -220,7 +226,7 @@ export function OccasionForm({
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
+                    selected={field.value ? parseLocalDate(field.value) : undefined}
                     onSelect={(date) => {
                       if (date) {
                         field.onChange(format(date, "yyyy-MM-dd"));

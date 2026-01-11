@@ -53,7 +53,7 @@ export function Sidebar() {
             className="text-2xl font-bold text-[#8b7355]"
             style={{ fontFamily: "'Kalam', cursive" }}
           >
-            Gifty
+            Gifto
           </span>
         </Link>
       </div>

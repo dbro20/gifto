@@ -36,9 +36,6 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl text-[#8b7355]">
             Welcome{user.firstName ? `, ${user.firstName}` : ""}!
           </h2>
-          <p className="text-[#b5a088] mt-1">
-            Here&apos;s your gift calendar for the year.
-          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm" className="border-2 border-[#e8d5c4] bg-[#f5ebe0] text-[#8b7355] hover:bg-[#e8d5c4] hover:scale-105 transition-transform">
@@ -63,7 +60,7 @@ export default async function DashboardPage() {
             <div className="rounded-full bg-[#f5ebe0] p-4 mb-4">
               <Users className="h-8 w-8 text-[#8b7355]" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-[#8b7355]">Get Started with Gifty</h3>
+            <h3 className="text-xl font-semibold mb-2 text-[#8b7355]">Get Started with Gifto</h3>
             <p className="text-[#b5a088] text-center max-w-md mb-6">
               Add your first person to start tracking their special occasions and gift ideas!
             </p>

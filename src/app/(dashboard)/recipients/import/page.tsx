@@ -153,12 +153,11 @@ export default function ImportContactsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground space-y-2">
-                <p className="font-medium">How to export from Apple Contacts:</p>
+                <p className="font-medium">How to export:</p>
                 <ol className="list-decimal list-inside space-y-1 text-xs">
                   <li>Open Contacts app on Mac</li>
                   <li>Select contacts or press Cmd+A for all</li>
                   <li>File → Export → Export vCard</li>
-                  <li>Upload the .vcf file below</li>
                 </ol>
               </div>
               <label className="block">
@@ -175,7 +174,7 @@ export default function ImportContactsPage() {
                     ) : (
                       <Upload className="mr-2 h-4 w-4" />
                     )}
-                    Upload vCard File
+                    Upload vCard (.vcf)
                   </span>
                 </Button>
               </label>

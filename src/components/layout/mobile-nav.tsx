@@ -39,7 +39,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
               className="text-2xl font-bold text-[#8b7355]"
               style={{ fontFamily: "'Kalam', cursive" }}
             >
-              Gifty
+              Gifto
             </span>
           </SheetTitle>
         </SheetHeader>

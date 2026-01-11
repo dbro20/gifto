@@ -40,7 +40,7 @@ export function Header({ title = "Home" }: HeaderProps) {
             className="text-xl font-bold text-[#8b7355]"
             style={{ fontFamily: "'Kalam', cursive" }}
           >
-            Gifty
+            Gifto
           </span>
         </div>
 

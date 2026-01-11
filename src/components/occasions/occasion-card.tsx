@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { format, differenceInDays, parseISO } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { CalendarIcon, RepeatIcon, UserIcon } from "lucide-react";
 
 import {
@@ -13,6 +13,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 type OccasionCardProps = {
   id: string;
@@ -26,33 +31,33 @@ type OccasionCardProps = {
   showRecipient?: boolean;
 };
 
+// Parse YYYY-MM-DD string directly to avoid timezone issues
+function parseDateString(dateStr: string): { year: number; month: number; day: number } {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return { year, month: month - 1, day }; // month is 0-indexed for Date constructor
+}
+
 function calculateDaysUntil(dateStr: string, isAnnual: boolean): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const occasionDate = parseISO(dateStr);
+  const { year, month, day } = parseDateString(dateStr);
 
   if (isAnnual) {
     // For annual occasions, calculate days until next occurrence
-    const thisYearOccasion = new Date(
-      today.getFullYear(),
-      occasionDate.getMonth(),
-      occasionDate.getDate()
-    );
+    const thisYearOccasion = new Date(today.getFullYear(), month, day);
+    thisYearOccasion.setHours(0, 0, 0, 0);
 
     if (thisYearOccasion < today) {
       // This year's has passed, calculate for next year
-      const nextYearOccasion = new Date(
-        today.getFullYear() + 1,
-        occasionDate.getMonth(),
-        occasionDate.getDate()
-      );
+      const nextYearOccasion = new Date(today.getFullYear() + 1, month, day);
       return differenceInDays(nextYearOccasion, today);
     }
 
     return differenceInDays(thisYearOccasion, today);
   }
 
+  const occasionDate = new Date(year, month, day);
   return differenceInDays(occasionDate, today);
 }
 
@@ -91,10 +96,10 @@ export function OccasionCard({
   const daysLabel = getDaysUntilLabel(daysUntil);
   const urgencyColor = getUrgencyColor(daysUntil);
 
-  const formattedDate = format(parseISO(date), "MMMM d, yyyy");
-  const displayDate = isAnnual
-    ? format(parseISO(date), "MMMM d")
-    : formattedDate;
+  // Format date without parseISO to avoid timezone issues
+  const { year, month, day } = parseDateString(date);
+  const formattedDate = `${MONTHS[month]} ${day}, ${year}`;
+  const displayDate = isAnnual ? `${MONTHS[month]} ${day}` : formattedDate;
 
   return (
     <Link href={`/occasions/${id}`}>

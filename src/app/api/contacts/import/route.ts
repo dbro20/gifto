@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         await createOccasion({
           recipientId: recipient.id,
           userId: dbUser.id,
-          occasionType: "birthday",
+          occasionType: "Birthday",
           date: contact.birthday,
           isAnnual: true,
         });
