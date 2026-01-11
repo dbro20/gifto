@@ -16,6 +16,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gifto",
   description: "Track gifts for the people you love",
+  metadataBase: new URL("https://gifto.dylanbrodeur.org"),
+  openGraph: {
+    title: "Gifto",
+    description: "Track gifts for the people you love",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gifto",
+    description: "Track gifts for the people you love",
+  },
 };
 
 export default function RootLayout({

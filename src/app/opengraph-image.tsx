@@ -1,0 +1,74 @@
+import { ImageResponse } from "next/og";
+
+export const runtime = "edge";
+
+export const alt = "Gifto - Track gifts for the people you love";
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = "image/png";
+
+export default async function Image() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(145deg, #fffcf7 0%, #faf6f1 100%)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 40,
+          }}
+        >
+          <svg
+            width="120"
+            height="120"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="32" height="32" rx="6" fill="#8b7355" />
+            <path
+              d="M16 6C14.5 6 13 7 13 9C13 10 13.5 11 14 11.5C12.5 11.5 10 12.5 10 15V24C10 25 11 26 12 26H20C21 26 22 25 22 24V15C22 12.5 19.5 11.5 18 11.5C18.5 11 19 10 19 9C19 7 17.5 6 16 6Z"
+              fill="#fffcf7"
+            />
+            <rect x="10" y="15" width="12" height="2" fill="#e8d5c4" />
+            <rect x="15" y="11" width="2" height="15" fill="#e8d5c4" />
+          </svg>
+        </div>
+        <div
+          style={{
+            fontSize: 80,
+            fontWeight: 700,
+            color: "#8b7355",
+            marginBottom: 20,
+          }}
+        >
+          Gifto
+        </div>
+        <div
+          style={{
+            fontSize: 32,
+            color: "#b5a088",
+          }}
+        >
+          Track gifts for the people you love
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+    }
+  );
+}
