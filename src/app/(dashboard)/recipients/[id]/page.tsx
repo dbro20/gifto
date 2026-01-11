@@ -55,7 +55,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
       <div className="flex items-start justify-between pb-4 border-b-2 border-dashed border-[#e8d5c4]">
         <h1
           className="text-2xl font-bold tracking-tight md:text-3xl"
-          style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+          style={{ color: "#8b7355" }}
         >
           {recipient.name}
         </h1>
@@ -68,7 +68,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
               borderColor: "#e8d5c4",
               background: "#f5ebe0",
               color: "#8b7355",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             <Link href={`/recipients/${recipient.id}/edit`}>Edit</Link>
@@ -82,7 +82,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
         <div className="space-y-2">
           <h2
             className="text-sm font-medium"
-            style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#b5a088" }}
           >
             Special Dates
           </h2>
@@ -94,7 +94,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
                 style={{ background: "#f5ebe0", border: "1px dashed #e8d5c4" }}
               >
                 <Calendar className="h-4 w-4" style={{ color: "#b5a088" }} />
-                <span className="font-medium" style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}>
+                <span className="font-medium" style={{ color: "#8b7355" }}>
                   {occasion.occasionType}
                 </span>
                 <span style={{ color: "#b5a088" }}>
@@ -113,13 +113,13 @@ export default async function RecipientDetailPage({ params }: PageProps) {
           <div className="space-y-2">
             <h2
               className="text-sm font-medium"
-              style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}
+              style={{ color: "#b5a088" }}
             >
               Notes
             </h2>
             <p
               className="text-sm whitespace-pre-wrap"
-              style={{ color: "#6b5a45", fontFamily: "'Kalam', cursive" }}
+              style={{ color: "#6b5a45" }}
             >
               {recipient.notes}
             </p>
@@ -134,7 +134,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
         <div className="flex items-center justify-between">
           <h2
             className="text-lg font-semibold"
-            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#8b7355" }}
           >
             Gift Ideas
           </h2>
@@ -145,7 +145,7 @@ export default async function RecipientDetailPage({ params }: PageProps) {
             style={{
               background: "#8b7355",
               color: "#fffcf7",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             <Link href={`/gifts/new?recipientId=${recipient.id}`}>

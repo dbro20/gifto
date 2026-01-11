@@ -149,7 +149,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}>Name *</FormLabel>
+              <FormLabel style={{ color: "#8b7355" }}>Name *</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter their name"
@@ -159,7 +159,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
                     borderColor: "#e8d5c4",
                     background: "#fffcf7",
                     color: "#6b5a45",
-                    fontFamily: "'Kalam', cursive",
+                    
                   }}
                 />
               </FormControl>
@@ -169,7 +169,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
         />
 
         <div className="space-y-2">
-          <FormLabel className="text-base" style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}>Special Dates *</FormLabel>
+          <FormLabel className="text-base" style={{ color: "#8b7355" }}>Special Dates *</FormLabel>
           <div
             className="p-4 border-2 border-dashed rounded-lg space-y-3"
             style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
@@ -303,7 +303,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
               variant="ghost"
               size="sm"
               className="h-8 px-2 transition-all duration-200 hover:scale-105"
-              style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}
+              style={{ color: "#b5a088" }}
               onClick={() => append({ occasionType: "Birthday", date: "", isAnnual: true })}
             >
               <Plus className="mr-1 h-3 w-3" />
@@ -323,7 +323,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}>Notes</FormLabel>
+              <FormLabel style={{ color: "#8b7355" }}>Notes</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Interests, sizes, preferences..."
@@ -334,7 +334,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
                     borderColor: "#e8d5c4",
                     background: "#fffcf7",
                     color: "#6b5a45",
-                    fontFamily: "'Kalam', cursive",
+                    
                   }}
                 />
               </FormControl>
@@ -351,7 +351,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
             style={{
               background: "#8b7355",
               color: "#fffcf7",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             {isSubmitting
@@ -370,7 +370,7 @@ export function RecipientForm({ recipient, occasions, mode }: RecipientFormProps
               borderColor: "#e8d5c4",
               background: "#f5ebe0",
               color: "#8b7355",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             Cancel

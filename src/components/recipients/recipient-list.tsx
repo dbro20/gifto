@@ -61,7 +61,7 @@ function EmptyState() {
       </div>
       <h3
         className="mt-4 text-lg font-semibold"
-        style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+        style={{ color: "#8b7355" }}
       >
         No recipients yet
       </h3>
@@ -129,7 +129,7 @@ export function RecipientList({ recipients, isLoading }: RecipientListProps) {
           <button
             onClick={() => handleSort("name")}
             className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-[#6b5a45] w-40"
-            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#8b7355" }}
           >
             Name
             <ArrowUpDown className={`h-3 w-3 ${sortField === "name" ? "opacity-100" : "opacity-40"}`} />
@@ -137,7 +137,7 @@ export function RecipientList({ recipients, isLoading }: RecipientListProps) {
           <button
             onClick={() => handleSort("birthday")}
             className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-[#6b5a45] w-24"
-            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#8b7355" }}
           >
             Birthday
             <ArrowUpDown className={`h-3 w-3 ${sortField === "birthday" ? "opacity-100" : "opacity-40"}`} />
@@ -157,13 +157,13 @@ export function RecipientList({ recipients, isLoading }: RecipientListProps) {
           >
             <span
               className="text-sm font-medium w-40 truncate"
-              style={{ color: "#6b5a45", fontFamily: "'Kalam', cursive" }}
+              style={{ color: "#6b5a45" }}
             >
               {recipient.name}
             </span>
             <span
               className="text-sm w-24"
-              style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+              style={{ color: "#8b7355" }}
             >
               {recipient.birthday ? formatBirthday(recipient.birthday) : "—"}
             </span>

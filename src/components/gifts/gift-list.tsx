@@ -77,7 +77,7 @@ function EmptyState({ status }: { status: FilterStatus }) {
       </div>
       <h3
         className="mt-4 text-lg font-semibold"
-        style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+        style={{ color: "#8b7355" }}
       >
         {title}
       </h3>
@@ -140,7 +140,7 @@ function GiftRow({
         </div>
         <span
           className={`text-sm font-medium truncate ${giftIdea.isPurchased ? "line-through" : ""}`}
-          style={{ fontFamily: "'Kalam', cursive" }}
+         
         >
           {giftIdea.title}
         </span>
@@ -204,7 +204,7 @@ export function GiftList({
               background: filterStatus === "all" ? "#f5ebe0" : "transparent",
               color: filterStatus === "all" ? "#8b7355" : "#b5a088",
               border: filterStatus === "all" ? "2px solid #e8d5c4" : "2px solid transparent",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             All ({giftIdeas.length})
@@ -218,7 +218,7 @@ export function GiftList({
               background: filterStatus === "available" ? "#f5ebe0" : "transparent",
               color: filterStatus === "available" ? "#8b7355" : "#b5a088",
               border: filterStatus === "available" ? "2px solid #e8d5c4" : "2px solid transparent",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             Available ({availableCount})
@@ -232,7 +232,7 @@ export function GiftList({
               background: filterStatus === "purchased" ? "#f5ebe0" : "transparent",
               color: filterStatus === "purchased" ? "#8b7355" : "#b5a088",
               border: filterStatus === "purchased" ? "2px solid #e8d5c4" : "2px solid transparent",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             Purchased ({purchasedCount})

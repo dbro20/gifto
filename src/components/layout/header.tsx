@@ -38,7 +38,7 @@ export function Header({ title = "Home" }: HeaderProps) {
           <Gift className="h-5 w-5 text-[#8b7355]" />
           <span
             className="text-xl font-bold text-[#8b7355]"
-            style={{ fontFamily: "'Kalam', cursive" }}
+           
           >
             Gifto
           </span>
@@ -48,7 +48,7 @@ export function Header({ title = "Home" }: HeaderProps) {
         <div className="flex-1 hidden md:block">
           <h1
             className="text-lg font-semibold md:text-xl text-[#8b7355]"
-            style={{ fontFamily: "'Kalam', cursive" }}
+           
           >
             {title}
           </h1>

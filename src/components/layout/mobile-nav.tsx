@@ -37,7 +37,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
             <Gift className="h-6 w-6 text-[#8b7355]" />
             <span
               className="text-2xl font-bold text-[#8b7355]"
-              style={{ fontFamily: "'Kalam', cursive" }}
+             
             >
               Gifto
             </span>
@@ -61,7 +61,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
                 >
                   <Link href={item.href}>
                     <item.icon className="h-5 w-5" />
-                    <span style={{ fontFamily: "'Kalam', cursive", fontWeight: isActive ? 700 : 400 }}>
+                    <span style={{  fontWeight: isActive ? 700 : 400 }}>
                       {item.title}
                     </span>
                   </Link>

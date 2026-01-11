@@ -29,7 +29,7 @@ export default async function RecipientsPage() {
         <div>
           <h1
             className="text-2xl font-bold tracking-tight md:text-3xl"
-            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#8b7355" }}
           >
             Friends & Fam
           </h1>
@@ -46,7 +46,7 @@ export default async function RecipientsPage() {
               borderColor: "#e8d5c4",
               background: "#f5ebe0",
               color: "#8b7355",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             <Link href="/recipients/import">
@@ -60,7 +60,7 @@ export default async function RecipientsPage() {
             style={{
               background: "#8b7355",
               color: "#fffcf7",
-              fontFamily: "'Kalam', cursive",
+              
             }}
           >
             <Link href="/recipients/new">Add Person</Link>

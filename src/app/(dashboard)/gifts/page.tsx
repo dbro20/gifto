@@ -41,7 +41,7 @@ export default async function GiftsPage({ searchParams }: PageProps) {
         <div>
           <h1
             className="text-2xl font-bold tracking-tight md:text-3xl"
-            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+            style={{ color: "#8b7355" }}
           >
             Gift Ideas
           </h1>
@@ -55,7 +55,7 @@ export default async function GiftsPage({ searchParams }: PageProps) {
           style={{
             background: "#8b7355",
             color: "#fffcf7",
-            fontFamily: "'Kalam', cursive",
+            
           }}
         >
           <Link href="/gifts/new">Add Gift Idea</Link>
@@ -65,7 +65,7 @@ export default async function GiftsPage({ searchParams }: PageProps) {
       {/* Recipient filter */}
       {recipients.length > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-sm" style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}>Filter by:</span>
+          <span className="text-sm" style={{ color: "#b5a088" }}>Filter by:</span>
           <RecipientFilter
             recipients={recipients}
             selectedRecipientId={recipientId}

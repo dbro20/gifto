@@ -15,7 +15,7 @@ export default async function NewRecipientPage() {
       <div className="pb-4 border-b-2 border-dashed border-[#e8d5c4]">
         <h1
           className="text-2xl font-bold tracking-tight md:text-3xl"
-          style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+          style={{ color: "#8b7355" }}
         >
           Add Someone Special
         </h1>

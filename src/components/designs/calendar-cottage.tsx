@@ -160,7 +160,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
             <h2
               className="text-3xl md:text-4xl text-[#8b7355]"
               style={{
-                fontFamily: "'Kalam', cursive",
+                
                 fontWeight: 700,
               }}
             >
@@ -168,7 +168,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
             </h2>
             <p
               className="text-[#b5a088] text-lg"
-              style={{ fontFamily: "'Kalam', cursive" }}
+             
             >
               {format(currentMonth, "yyyy")}
             </p>
@@ -181,7 +181,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
               style={{
                 background: "#f5ebe0",
                 color: "#8b7355",
-                fontFamily: "'Kalam', cursive",
+                
                 fontWeight: 400,
                 border: "2px solid #e8d5c4",
               }}
@@ -194,7 +194,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
               style={{
                 background: "#f5ebe0",
                 border: "2px solid #e8d5c4",
-                fontFamily: "'Kalam', cursive",
+                
                 fontSize: "20px",
               }}
             >
@@ -206,7 +206,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
               style={{
                 background: "#f5ebe0",
                 border: "2px solid #e8d5c4",
-                fontFamily: "'Kalam', cursive",
+                
                 fontSize: "20px",
               }}
             >
@@ -221,7 +221,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
             <div
               key={day}
               className="text-center py-2 text-sm text-[#b5a088]"
-              style={{ fontFamily: "'Kalam', cursive" }}
+             
             >
               {day}
             </div>
@@ -258,7 +258,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
                     text-sm block
                     ${isCurrentDay ? "text-[#8b6914] font-bold" : "text-[#a08b70]"}
                   `}
-                  style={{ fontFamily: "'Kalam', cursive" }}
+                 
                 >
                   {format(day, "d")}
                 </span>
@@ -286,7 +286,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
                             border: `1px solid ${color.border}`,
                             borderRadius: "2px",
                             color: "#6b5a45",
-                            fontFamily: "'Kalam', cursive",
+                            
                             boxShadow: "1px 1px 2px rgba(0,0,0,0.05)",
                             transform: `rotate(${idx % 2 === 0 ? -1 : 1}deg)`,
                           }}
@@ -303,7 +303,7 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
                   {dayOccasions.length > 2 && (
                     <div
                       className="text-xs text-[#b5a088] px-1"
-                      style={{ fontFamily: "'Kalam', cursive" }}
+                     
                     >
                       +{dayOccasions.length - 2} more
                     </div>
@@ -315,11 +315,6 @@ export function CalendarCottage({ occasions }: CalendarCottageProps) {
         </div>
 
       </div>
-
-      {/* Google Fonts */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
-      `}</style>
     </div>
   );
 }
