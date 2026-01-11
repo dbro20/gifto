@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { getUserByClerkId } from "@/lib/db/queries/users";
+import { getOrCreateUser } from "@/lib/db/queries/users";
 import {
   getRecipientsByUserId,
   createRecipient,
 } from "@/lib/db/queries/recipients";
+import { createOccasion } from "@/lib/db/queries/occasions";
 import { createRecipientSchema } from "@/lib/validations/recipient";
 
 /**
@@ -19,11 +20,11 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const dbUser = await getUserByClerkId(user.id);
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const dbUser = await getOrCreateUser(
+      user.id,
+      user.emailAddresses[0]?.emailAddress ?? "",
+      user.fullName ?? user.firstName
+    );
 
     const recipients = await getRecipientsByUserId(dbUser.id);
 
@@ -49,11 +50,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const dbUser = await getUserByClerkId(user.id);
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const dbUser = await getOrCreateUser(
+      user.id,
+      user.emailAddresses[0]?.emailAddress ?? "",
+      user.fullName ?? user.firstName
+    );
 
     const body = await request.json();
 
@@ -68,12 +69,32 @@ export async function POST(request: Request) {
 
     const { name, relationship, notes } = validationResult.data;
 
+    // Create recipient
     const recipient = await createRecipient({
       userId: dbUser.id,
       name,
       relationship: relationship ?? null,
       notes: notes ?? null,
     });
+
+    // Create occasions if provided
+    const occasions = body.occasions as Array<{
+      occasionType: string;
+      date: string;
+      isAnnual?: boolean;
+    }> | undefined;
+
+    if (occasions && occasions.length > 0) {
+      for (const occasion of occasions) {
+        await createOccasion({
+          recipientId: recipient.id,
+          userId: dbUser.id,
+          occasionType: occasion.occasionType,
+          date: occasion.date,
+          isAnnual: occasion.isAnnual ?? true,
+        });
+      }
+    }
 
     return NextResponse.json(recipient, { status: 201 });
   } catch (error) {

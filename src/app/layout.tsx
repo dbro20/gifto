@@ -24,7 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+        afterSignOutUrl="/"
+        signInFallbackRedirectUrl="/home"
+        signUpFallbackRedirectUrl="/home"
+      >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

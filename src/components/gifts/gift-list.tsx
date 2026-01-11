@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ChevronRight, ExternalLink } from "lucide-react";
 
-import { GiftCard } from "./gift-card";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { GiftIdea } from "@/types";
 
 type GiftIdeaWithRecipient = GiftIdea & {
@@ -24,26 +27,18 @@ type FilterStatus = "all" | "available" | "purchased";
 
 function GiftListSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className="rounded-lg border-2 border-dashed overflow-hidden"
+      style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+    >
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="h-36 rounded-xl border bg-card animate-pulse"
+          className="flex items-center justify-between px-3 py-2 animate-pulse"
+          style={{ borderBottom: i < 5 ? "1px dashed #e8d5c4" : "none" }}
         >
-          <div className="p-6 space-y-3">
-            <div className="flex items-start justify-between">
-              <div className="space-y-2 flex-1">
-                <div className="h-5 w-32 bg-muted rounded" />
-                <div className="h-4 w-20 bg-muted rounded" />
-              </div>
-              <div className="h-5 w-16 bg-muted rounded-full" />
-            </div>
-            <div className="h-4 w-full bg-muted rounded" />
-            <div className="flex justify-between">
-              <div className="h-4 w-12 bg-muted rounded" />
-              <div className="h-4 w-20 bg-muted rounded" />
-            </div>
-          </div>
+          <div className="h-4 w-48 rounded" style={{ background: "#f5ebe0" }} />
+          <div className="h-3 w-3 rounded" style={{ background: "#f5ebe0" }} />
         </div>
       ))}
     </div>
@@ -70,28 +65,105 @@ function EmptyState({ status }: { status: FilterStatus }) {
   const { title, description } = messages[status];
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="h-6 w-6 text-muted-foreground"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
-          />
-        </svg>
+    <div
+      className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center"
+      style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+    >
+      <div
+        className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
+        style={{ background: "#f5ebe0" }}
+      >
+        <span className="text-2xl">🎁</span>
       </div>
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+      <h3
+        className="mt-4 text-lg font-semibold"
+        style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+      >
+        {title}
+      </h3>
+      <p className="mt-2 text-sm max-w-sm" style={{ color: "#b5a088" }}>
         {description}
       </p>
     </div>
+  );
+}
+
+function GiftRow({
+  giftIdea,
+  showRecipient
+}: {
+  giftIdea: GiftIdeaWithRecipient;
+  showRecipient: boolean;
+}) {
+  const router = useRouter();
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  async function togglePurchased(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsPurchasing(true);
+
+    try {
+      const method = giftIdea.isPurchased ? "DELETE" : "POST";
+      const response = await fetch(`/api/gift-ideas/${giftIdea.id}/purchase`, {
+        method,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update purchase status");
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating purchase status:", error);
+    } finally {
+      setIsPurchasing(false);
+    }
+  }
+
+  return (
+    <Link
+      href={`/gifts/${giftIdea.id}`}
+      className={`flex items-center justify-between px-3 py-2 transition-all duration-200 hover:scale-[1.01] ${
+        giftIdea.isPurchased ? "opacity-50" : ""
+      }`}
+      style={{ color: "#6b5a45" }}
+    >
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div onClick={togglePurchased}>
+          <Checkbox
+            checked={giftIdea.isPurchased}
+            disabled={isPurchasing}
+            className="h-4 w-4 border-2"
+            style={{ borderColor: "#e8d5c4" }}
+          />
+        </div>
+        <span
+          className={`text-sm font-medium truncate ${giftIdea.isPurchased ? "line-through" : ""}`}
+          style={{ fontFamily: "'Kalam', cursive" }}
+        >
+          {giftIdea.title}
+        </span>
+        {showRecipient && giftIdea.recipient && (
+          <span className="text-xs shrink-0" style={{ color: "#b5a088" }}>
+            {giftIdea.recipient.name}
+          </span>
+        )}
+        {giftIdea.url && (
+          <a
+            href={giftIdea.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0 hover:scale-110 transition-transform"
+            style={{ color: "#b5a088" }}
+          >
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+      </div>
+      <ChevronRight className="h-3 w-3 shrink-0" style={{ color: "#b5a088" }} />
+    </Link>
   );
 }
 
@@ -124,40 +196,68 @@ export function GiftList({
       {giftIdeas.length > 0 && (
         <div className="flex gap-2">
           <Button
-            variant={filterStatus === "all" ? "secondary" : "ghost"}
+            variant="ghost"
             size="sm"
             onClick={() => setFilterStatus("all")}
+            className="transition-all duration-200"
+            style={{
+              background: filterStatus === "all" ? "#f5ebe0" : "transparent",
+              color: filterStatus === "all" ? "#8b7355" : "#b5a088",
+              border: filterStatus === "all" ? "2px solid #e8d5c4" : "2px solid transparent",
+              fontFamily: "'Kalam', cursive",
+            }}
           >
             All ({giftIdeas.length})
           </Button>
           <Button
-            variant={filterStatus === "available" ? "secondary" : "ghost"}
+            variant="ghost"
             size="sm"
             onClick={() => setFilterStatus("available")}
+            className="transition-all duration-200"
+            style={{
+              background: filterStatus === "available" ? "#f5ebe0" : "transparent",
+              color: filterStatus === "available" ? "#8b7355" : "#b5a088",
+              border: filterStatus === "available" ? "2px solid #e8d5c4" : "2px solid transparent",
+              fontFamily: "'Kalam', cursive",
+            }}
           >
             Available ({availableCount})
           </Button>
           <Button
-            variant={filterStatus === "purchased" ? "secondary" : "ghost"}
+            variant="ghost"
             size="sm"
             onClick={() => setFilterStatus("purchased")}
+            className="transition-all duration-200"
+            style={{
+              background: filterStatus === "purchased" ? "#f5ebe0" : "transparent",
+              color: filterStatus === "purchased" ? "#8b7355" : "#b5a088",
+              border: filterStatus === "purchased" ? "2px solid #e8d5c4" : "2px solid transparent",
+              fontFamily: "'Kalam', cursive",
+            }}
           >
             Purchased ({purchasedCount})
           </Button>
         </div>
       )}
 
-      {/* Gift cards grid */}
+      {/* Gift list */}
       {filteredGiftIdeas.length === 0 ? (
         <EmptyState status={giftIdeas.length === 0 ? "all" : filterStatus} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredGiftIdeas.map((giftIdea) => (
-            <GiftCard
+        <div
+          className="rounded-lg border-2 overflow-hidden"
+          style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+        >
+          {filteredGiftIdeas.map((giftIdea, index) => (
+            <div
               key={giftIdea.id}
-              giftIdea={giftIdea}
-              showRecipient={showRecipient}
-            />
+              style={{ borderBottom: index < filteredGiftIdeas.length - 1 ? "1px dashed #e8d5c4" : "none" }}
+            >
+              <GiftRow
+                giftIdea={giftIdea}
+                showRecipient={showRecipient}
+              />
+            </div>
           ))}
         </div>
       )}

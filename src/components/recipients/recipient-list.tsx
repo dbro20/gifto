@@ -1,26 +1,38 @@
-import { RecipientCard } from "./recipient-card";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import type { Recipient } from "@/types";
 
+type RecipientWithBirthday = Recipient & { birthday: string | null };
+
 interface RecipientListProps {
-  recipients: Recipient[];
+  recipients: RecipientWithBirthday[];
   isLoading?: boolean;
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function formatBirthday(dateString: string): string {
+  // Parse directly from string to avoid any timezone issues
+  const [, month, day] = dateString.split("-");
+  const monthIndex = parseInt(month, 10) - 1;
+  const dayNum = parseInt(day, 10);
+  return `${MONTHS[monthIndex]} ${dayNum}`;
 }
 
 function RecipientListSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className="rounded-lg border-2 border-dashed overflow-hidden"
+      style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+    >
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="h-28 rounded-xl border bg-card animate-pulse"
+          className="flex items-center justify-between px-3 py-2 animate-pulse"
+          style={{ borderBottom: i < 5 ? "1px dashed #e8d5c4" : "none" }}
         >
-          <div className="p-6 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-muted" />
-            <div className="flex-1 space-y-2">
-              <div className="h-4 w-24 bg-muted rounded" />
-              <div className="h-5 w-16 bg-muted rounded-full" />
-            </div>
-          </div>
+          <div className="h-4 w-40 rounded" style={{ background: "#f5ebe0" }} />
+          <div className="h-3 w-3 rounded" style={{ background: "#f5ebe0" }} />
         </div>
       ))}
     </div>
@@ -29,25 +41,23 @@ function RecipientListSkeleton() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="h-6 w-6 text-muted-foreground"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
-          />
-        </svg>
+    <div
+      className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center"
+      style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+    >
+      <div
+        className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
+        style={{ background: "#f5ebe0" }}
+      >
+        <span className="text-2xl">👥</span>
       </div>
-      <h3 className="mt-4 text-lg font-semibold">No recipients yet</h3>
-      <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+      <h3
+        className="mt-4 text-lg font-semibold"
+        style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+      >
+        No recipients yet
+      </h3>
+      <p className="mt-2 text-sm max-w-sm" style={{ color: "#b5a088" }}>
         Get started by adding the people you want to track gifts for. You can
         add their birthdays, holidays, and gift ideas.
       </p>
@@ -65,9 +75,38 @@ export function RecipientList({ recipients, isLoading }: RecipientListProps) {
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {recipients.map((recipient) => (
-        <RecipientCard key={recipient.id} recipient={recipient} />
+    <div
+      className="rounded-lg border-2 overflow-hidden"
+      style={{ borderColor: "#e8d5c4", background: "#fffcf7" }}
+    >
+      {recipients.map((recipient, index) => (
+        <Link
+          key={recipient.id}
+          href={`/recipients/${recipient.id}`}
+          className="flex items-center justify-between px-3 py-2 transition-all duration-200 hover:scale-[1.01]"
+          style={{
+            borderBottom: index < recipients.length - 1 ? "1px dashed #e8d5c4" : "none",
+            color: "#6b5a45",
+          }}
+        >
+          <span
+            className="text-sm font-medium"
+            style={{ fontFamily: "'Kalam', cursive" }}
+          >
+            {recipient.name}
+          </span>
+          <div className="flex items-center gap-3">
+            {recipient.birthday && (
+              <span
+                className="text-xs"
+                style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}
+              >
+                {formatBirthday(recipient.birthday)}
+              </span>
+            )}
+            <ChevronRight className="h-3 w-3" style={{ color: "#b5a088" }} />
+          </div>
+        </Link>
       ))}
     </div>
   );

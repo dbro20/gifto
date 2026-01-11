@@ -37,16 +37,27 @@ export default async function GiftsPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-4 border-b-2 border-dashed border-[#e8d5c4]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+          <h1
+            className="text-2xl font-bold tracking-tight md:text-3xl"
+            style={{ color: "#8b7355", fontFamily: "'Kalam', cursive" }}
+          >
             Gift Ideas
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1" style={{ color: "#b5a088" }}>
             Manage your gift ideas for all recipients.
           </p>
         </div>
-        <Button asChild>
+        <Button
+          asChild
+          className="transition-all duration-200 hover:scale-105"
+          style={{
+            background: "#8b7355",
+            color: "#fffcf7",
+            fontFamily: "'Kalam', cursive",
+          }}
+        >
           <Link href="/gifts/new">Add Gift Idea</Link>
         </Button>
       </div>
@@ -54,7 +65,7 @@ export default async function GiftsPage({ searchParams }: PageProps) {
       {/* Recipient filter */}
       {recipients.length > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Filter by:</span>
+          <span className="text-sm" style={{ color: "#b5a088", fontFamily: "'Kalam', cursive" }}>Filter by:</span>
           <RecipientFilter
             recipients={recipients}
             selectedRecipientId={recipientId}

@@ -1,6 +1,6 @@
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { recipients } from "@/lib/db/schema";
+import { recipients, occasions } from "@/lib/db/schema";
 import type { Recipient, NewRecipient } from "@/types";
 
 /**
@@ -14,6 +14,40 @@ export async function getRecipientsByUserId(
     .from(recipients)
     .where(eq(recipients.userId, userId))
     .orderBy(desc(recipients.createdAt));
+}
+
+/**
+ * Get all recipients with their birthday occasion
+ */
+export async function getRecipientsWithBirthday(
+  userId: string
+): Promise<(Recipient & { birthday: string | null })[]> {
+  const recipientList = await db
+    .select()
+    .from(recipients)
+    .where(eq(recipients.userId, userId))
+    .orderBy(desc(recipients.createdAt));
+
+  // Get all birthday occasions for these recipients
+  const birthdayOccasions = await db
+    .select()
+    .from(occasions)
+    .where(
+      and(
+        eq(occasions.userId, userId),
+        eq(occasions.occasionType, "Birthday")
+      )
+    );
+
+  // Map birthdays to recipients
+  const birthdayMap = new Map(
+    birthdayOccasions.map((o) => [o.recipientId, o.date])
+  );
+
+  return recipientList.map((r) => ({
+    ...r,
+    birthday: birthdayMap.get(r.id) || null,
+  }));
 }
 
 /**

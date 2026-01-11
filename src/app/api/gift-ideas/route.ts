@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { z } from "zod";
 import { getUserByClerkId } from "@/lib/db/queries/users";
 import {
   getGiftIdeasByUserId,
   createGiftIdea,
 } from "@/lib/db/queries/gift-ideas";
-import { createGiftIdeaSchema } from "@/lib/validations/gift-idea";
 import { isAmazonUrl, convertToAffiliateLink } from "@/lib/amazon/affiliate-link";
 import { extractASIN } from "@/lib/amazon/extract-asin";
+
+const createGiftSchema = z.object({
+  recipientIds: z.array(z.string().uuid()).min(1),
+  title: z.string().min(1).max(200),
+  url: z.string().url().max(2000).optional().nullable().or(z.literal("")),
+});
 
 /**
  * GET /api/gift-ideas
@@ -46,7 +52,7 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/gift-ideas
- * Create a new gift idea for the authenticated user
+ * Create gift ideas for multiple recipients
  * If URL is Amazon, extract ASIN and convert to affiliate link
  */
 export async function POST(request: Request) {
@@ -65,7 +71,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const validationResult = createGiftIdeaSchema.safeParse(body);
+    const validationResult = createGiftSchema.safeParse(body);
 
     if (!validationResult.success) {
       return NextResponse.json(
@@ -74,13 +80,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { recipientId, title, description, url, price } = validationResult.data;
+    const { recipientIds, title, url } = validationResult.data;
 
     // Process URL for Amazon affiliate links
     let processedUrl: string | null = null;
     let originalUrl: string | null = null;
     let asin: string | null = null;
-    let originalPrice: string | null = null;
 
     if (url && url.trim() !== "") {
       if (isAmazonUrl(url)) {
@@ -89,35 +94,31 @@ export async function POST(request: Request) {
           asin = extractedAsin;
           originalUrl = url;
           processedUrl = convertToAffiliateLink(url, extractedAsin);
-          // Store the entered price as original_price for Amazon products
-          if (price && price.trim() !== "") {
-            originalPrice = price;
-          }
         } else {
-          // Amazon URL but couldn't extract ASIN, store as-is
           processedUrl = url;
           originalUrl = url;
         }
       } else {
-        // Non-Amazon URL, store as-is
         processedUrl = url;
         originalUrl = url;
       }
     }
 
-    const giftIdea = await createGiftIdea({
-      userId: dbUser.id,
-      recipientId,
-      title,
-      description: description ?? null,
-      url: processedUrl,
-      originalUrl,
-      price: price && price.trim() !== "" ? price : null,
-      asin,
-      originalPrice,
-    });
+    // Create a gift idea for each selected recipient
+    const createdGifts = await Promise.all(
+      recipientIds.map((recipientId) =>
+        createGiftIdea({
+          userId: dbUser.id,
+          recipientId,
+          title,
+          url: processedUrl,
+          originalUrl,
+          asin,
+        })
+      )
+    );
 
-    return NextResponse.json(giftIdea, { status: 201 });
+    return NextResponse.json(createdGifts, { status: 201 });
   } catch (error) {
     console.error("Error creating gift idea:", error);
     return NextResponse.json(

@@ -44,8 +44,7 @@ export default async function NewGiftPage({ searchParams }: PageProps) {
         <CardHeader>
           <CardTitle>Add Gift Idea</CardTitle>
           <CardDescription>
-            Save a gift idea for someone special. Amazon links will
-            automatically be converted to affiliate links.
+            Save a gift idea for one or more people.
           </CardDescription>
         </CardHeader>
         <CardContent>

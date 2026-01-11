@@ -1,3 +1,5 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +14,13 @@ import {
   Heart,
 } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+
+  // If user is signed in, redirect to dashboard
+  if (userId) {
+    redirect("/home");
+  }
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans">
       {/* Navigation */}

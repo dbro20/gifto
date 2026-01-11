@@ -11,6 +11,7 @@ import {
 import { RecipientForm } from "@/components/recipients/recipient-form";
 import { getUserByClerkId } from "@/lib/db/queries/users";
 import { getRecipientById } from "@/lib/db/queries/recipients";
+import { getOccasionsByUserId } from "@/lib/db/queries/occasions";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -30,7 +31,10 @@ export default async function EditRecipientPage({ params }: PageProps) {
   }
 
   const { id } = await params;
-  const recipient = await getRecipientById(id, dbUser.id);
+  const [recipient, occasions] = await Promise.all([
+    getRecipientById(id, dbUser.id),
+    getOccasionsByUserId(dbUser.id, id),
+  ]);
 
   if (!recipient) {
     notFound();
@@ -55,7 +59,7 @@ export default async function EditRecipientPage({ params }: PageProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <RecipientForm mode="edit" recipient={recipient} />
+          <RecipientForm mode="edit" recipient={recipient} occasions={occasions} />
         </CardContent>
       </Card>
     </div>

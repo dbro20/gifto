@@ -3,11 +3,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { X, Check, ChevronsUpDown } from "lucide-react";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Form,
@@ -19,17 +20,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
-  createGiftIdeaSchema,
-  type CreateGiftIdeaInput,
-} from "@/lib/validations/gift-idea";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import type { GiftIdea, Recipient } from "@/types";
+
+const createGiftFormSchema = z.object({
+  recipientIds: z.array(z.string().uuid()).min(1, "Select at least one person"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(200, "Title must be less than 200 characters"),
+  url: z
+    .string()
+    .url("Invalid URL format")
+    .max(2000, "URL must be less than 2000 characters")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
+});
+
+type FormInput = z.infer<typeof createGiftFormSchema>;
 
 interface GiftFormProps {
   giftIdea?: GiftIdea;
@@ -38,9 +59,6 @@ interface GiftFormProps {
   mode: "create" | "edit";
 }
 
-/**
- * Check if a URL appears to be an Amazon URL
- */
 function isAmazonUrl(url: string): boolean {
   if (!url || typeof url !== "string") return false;
   return url.toLowerCase().includes("amazon.");
@@ -55,54 +73,110 @@ export function GiftForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAmazon, setIsAmazon] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const form = useForm<CreateGiftIdeaInput>({
-    resolver: zodResolver(createGiftIdeaSchema),
+  const form = useForm<FormInput>({
+    resolver: zodResolver(createGiftFormSchema),
     defaultValues: {
-      recipientId: giftIdea?.recipientId ?? defaultRecipientId ?? "",
+      recipientIds: giftIdea?.recipientId
+        ? [giftIdea.recipientId]
+        : defaultRecipientId
+          ? [defaultRecipientId]
+          : [],
       title: giftIdea?.title ?? "",
-      description: giftIdea?.description ?? "",
       url: giftIdea?.originalUrl ?? giftIdea?.url ?? "",
-      price: giftIdea?.price ?? "",
     },
   });
 
-  // Watch URL field for Amazon detection
   const watchedUrl = form.watch("url");
+  const selectedIds = form.watch("recipientIds");
 
   useEffect(() => {
     setIsAmazon(isAmazonUrl(watchedUrl ?? ""));
   }, [watchedUrl]);
 
-  async function onSubmit(data: CreateGiftIdeaInput) {
+  const filteredRecipients = useMemo(() => {
+    if (!searchQuery) return recipients;
+    return recipients.filter((r) =>
+      r.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [recipients, searchQuery]);
+
+  const selectedRecipients = useMemo(() => {
+    return recipients.filter((r) => selectedIds.includes(r.id));
+  }, [recipients, selectedIds]);
+
+  const toggleRecipient = (recipientId: string) => {
+    const current = form.getValues("recipientIds");
+    if (current.includes(recipientId)) {
+      form.setValue(
+        "recipientIds",
+        current.filter((id) => id !== recipientId),
+        { shouldValidate: true }
+      );
+    } else {
+      form.setValue("recipientIds", [...current, recipientId], {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  const removeRecipient = (recipientId: string) => {
+    const current = form.getValues("recipientIds");
+    form.setValue(
+      "recipientIds",
+      current.filter((id) => id !== recipientId),
+      { shouldValidate: true }
+    );
+  };
+
+  async function onSubmit(data: FormInput) {
     setIsSubmitting(true);
 
     try {
-      const url =
-        mode === "create"
-          ? "/api/gift-ideas"
-          : `/api/gift-ideas/${giftIdea?.id}`;
-      const method = mode === "create" ? "POST" : "PUT";
+      if (mode === "create") {
+        // Create gift for each selected recipient
+        const response = await fetch("/api/gift-ideas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipientIds: data.recipientIds,
+            title: data.title,
+            url: data.url,
+          }),
+        });
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to save gift idea");
+        }
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to save gift idea");
+        router.push("/gifts");
+        router.refresh();
+      } else {
+        // Edit mode - update single gift
+        const response = await fetch(`/api/gift-ideas/${giftIdea?.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipientId: data.recipientIds[0],
+            title: data.title,
+            url: data.url,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to save gift idea");
+        }
+
+        const savedGiftIdea = await response.json();
+        router.push(`/gifts/${savedGiftIdea.id}`);
+        router.refresh();
       }
-
-      const savedGiftIdea = await response.json();
-      router.push(`/gifts/${savedGiftIdea.id}`);
-      router.refresh();
     } catch (error) {
       console.error("Error saving gift idea:", error);
-      // Could add toast notification here
     } finally {
       setIsSubmitting(false);
     }
@@ -113,34 +187,87 @@ export function GiftForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="recipientId"
-          render={({ field }) => (
+          name="recipientIds"
+          render={() => (
             <FormItem>
-              <FormLabel>Recipient *</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a recipient" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {recipients.map((recipient) => (
-                    <SelectItem key={recipient.id} value={recipient.id}>
+              <FormLabel>{mode === "create" ? "People *" : "Person *"}</FormLabel>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between font-normal"
+                    >
+                      {selectedIds.length === 0
+                        ? "Search and select people..."
+                        : `${selectedIds.length} selected`}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Search people..."
+                      value={searchQuery}
+                      onValueChange={setSearchQuery}
+                    />
+                    <CommandList>
+                      <CommandEmpty>No people found.</CommandEmpty>
+                      <CommandGroup>
+                        {filteredRecipients.map((recipient) => (
+                          <CommandItem
+                            key={recipient.id}
+                            value={recipient.id}
+                            onSelect={() => toggleRecipient(recipient.id)}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedIds.includes(recipient.id)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {recipient.name}
+                            {recipient.relationship && (
+                              <span className="ml-2 text-muted-foreground">
+                                ({recipient.relationship})
+                              </span>
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedRecipients.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedRecipients.map((recipient) => (
+                    <Badge
+                      key={recipient.id}
+                      variant="secondary"
+                      className="gap-1"
+                    >
                       {recipient.name}
-                      {recipient.relationship && (
-                        <span className="text-muted-foreground ml-2">
-                          ({recipient.relationship})
-                        </span>
-                      )}
-                    </SelectItem>
+                      <button
+                        type="button"
+                        onClick={() => removeRecipient(recipient.id)}
+                        className="ml-1 rounded-full hover:bg-muted-foreground/20"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
               <FormDescription>
-                Who is this gift idea for?
+                {mode === "create"
+                  ? "Select one or more people for this gift idea."
+                  : "Who is this gift idea for?"}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -156,32 +283,6 @@ export function GiftForm({
               <FormControl>
                 <Input placeholder="Enter gift idea title" {...field} />
               </FormControl>
-              <FormDescription>
-                A brief name for this gift idea.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Add any notes about this gift idea..."
-                  className="min-h-24"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormDescription>
-                Optional details like size, color, or why you think they would
-                like it.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -211,35 +312,7 @@ export function GiftForm({
               <FormDescription>
                 {isAmazon
                   ? "Amazon URLs will be converted to affiliate links automatically."
-                  : "Link to the product page."}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    $
-                  </span>
-                  <Input
-                    type="text"
-                    placeholder="0.00"
-                    className="pl-7"
-                    {...field}
-                    value={field.value ?? ""}
-                  />
-                </div>
-              </FormControl>
-              <FormDescription>
-                Current price of the item (optional).
+                  : "Link to the product page (optional)."}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -253,7 +326,7 @@ export function GiftForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-                ? "Create Gift Idea"
+                ? "Add Gift Idea"
                 : "Save Changes"}
           </Button>
           <Button
